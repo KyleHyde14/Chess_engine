@@ -1,23 +1,34 @@
 import pygame
+import pieces   
+from engine import Game_state
 
 WINDOW_SIZE = 512  
 BOARD_SIZE = 8     
-CELL_SIZE = WINDOW_SIZE // BOARD_SIZE  
+CELL_SIZE = WINDOW_SIZE // BOARD_SIZE
+FPS = 60  
 
-# Colores
 WHITE = (222,184,135)
 BLACK = (79,48,31)
 
-START_POSITIONS = [
-    ["R", "H", "B", "Q", "K", "B", "H", "R"],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    ["R", "H", "B", "Q", "K", "B", "H", "R"]
-]
+IMAGES = {}
+
+PIECES = {
+    'P': pieces.Pawn,
+    'H': pieces.Knight,
+    'B': pieces.Bishop,
+    'R': pieces.Rook,
+    'Q': pieces.Queen,
+    'K': pieces.King
+}
+
+def load_images():
+    for piece in PIECES:
+        for color in ['white', 'black']:
+            img = pygame.image.load(f'images/{color}_{piece}.png')
+            img = pygame.transform.scale(img, (CELL_SIZE, CELL_SIZE))
+            current_color = 'w' if color == 'white' else 'b'
+            IMAGES[f'{current_color}{piece}'] = img
+
 
 def draw_board(screen):
     for row in range(BOARD_SIZE):
@@ -26,32 +37,56 @@ def draw_board(screen):
             rect = pygame.Rect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
             pygame.draw.rect(screen, color, rect)
 
-def draw_pieces(screen, pieces, position):
+def draw_pieces(screen, board):
     for row in range(BOARD_SIZE):
         for col in range(BOARD_SIZE):
-            piece = START_POSITIONS[row][col]
-            if piece != ' ':
-                piece_color = 'white' if row >= 6 else 'black'
-                piece_img = pygame.image.load(f'images/{piece_color}_{piece}.png')
-                screen.blit(piece_img, (col * CELL_SIZE, row * CELL_SIZE))
+            square = board[row][col]
+            if square != "__":
+                color = square[0]
+                piece = PIECES[square[1]]("white" if color == 'w' else "black", (row, col))
+                screen.blit(IMAGES[f'{color}{piece.value}'], (col * CELL_SIZE, row * CELL_SIZE))
+
+def draw_game(screen, gs):
+    draw_board(screen)
+    draw_pieces(screen, gs.board)
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
+    gs = Game_state()
     pygame.display.set_caption("Chess Baby")
     clock = pygame.time.Clock()
     running = True
+    load_images()
+    sqClicked = ()
+    playerClicks = []
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                col = pos[0] // CELL_SIZE
+                row = pos[1] // CELL_SIZE
+                if not playerClicks and gs.board[row][col] == "__":
+                    continue
+                if sqClicked == (row, col):
+                    sqClicked = ()
+                    playerClicks = []
+                else:
+                    sqClicked = (row, col)
+                    playerClicks.append(sqClicked)
+                if len(playerClicks) == 2:
+                    move = playerClicks
+                    gs.make_move(move)
+                    playerClicks = []
+                    sqClicked = ()
 
-        draw_board(screen)
-        draw_pieces(screen, 0, (0, 0))
+        draw_game(screen, gs)
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(FPS)
 
     pygame.quit()
 
