@@ -29,6 +29,12 @@ def load_images():
             current_color = 'w' if color == 'white' else 'b'
             IMAGES[f'{current_color}{piece}'] = img
 
+# def show_positions(board):
+#     for i in range(BOARD_SIZE):
+#         for j in range(BOARD_SIZE):
+#             if board[i][j] != "__":
+#                 piece = PIECES[board[i][j][1]]("white" if board[i][j][0] == 'w' else "black", (i, j))
+#                 print(piece.value, piece.position)
 
 def draw_board(screen):
     for row in range(BOARD_SIZE):
@@ -65,6 +71,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_z:
+                    gs.undo_move()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
@@ -78,10 +87,24 @@ def main():
                     sqClicked = (row, col)
                     playerClicks.append(sqClicked)
                 if len(playerClicks) == 2:
-                    move = playerClicks
-                    gs.make_move(move)
-                    playerClicks = []
-                    sqClicked = ()
+                    piece = gs.board[playerClicks[0][0]][playerClicks[0][1]]
+                    if piece[0] == 'w' and not gs.white_to_move or piece[0] == 'b' and gs.white_to_move:
+                        playerClicks = []
+                        sqClicked = ()
+                        continue
+                    else:
+                        move = playerClicks
+                        print(move)
+                        if move in gs.get_all_valid_moves():                            
+                            gs.make_move(move)
+                            playerClicks = []
+                            sqClicked = ()
+                        else:
+                            playerClicks = []
+                            sqClicked = ()
+                            continue
+
+                print(playerClicks)
 
         draw_game(screen, gs)
 
