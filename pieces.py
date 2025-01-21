@@ -73,7 +73,19 @@ class Knight(Piece):
         super().__init__('H', color, position)
     
     def get_valid_moves(self, board):
+        landing_squares = [(-2, -1), (-2, 1), (2, -1), (2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2)]
+        start_square = self.position
         valid_moves = []
+        for square in landing_squares:
+            try:
+                end_square = (start_square[0] + square[0], start_square[1] + square[1])
+                if board[end_square[0]][end_square[1]] == "__" or board[end_square[0]][end_square[1]][0] != self.color[0]:
+                    valid_moves.append([start_square, end_square])
+            except:
+                continue
+            
+
+        print(valid_moves)
         return valid_moves
 
 class Bishop(Piece):
