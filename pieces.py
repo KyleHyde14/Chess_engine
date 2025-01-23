@@ -77,15 +77,11 @@ class Knight(Piece):
         start_square = self.position
         valid_moves = []
         for square in landing_squares:
-            try:
+            if (0 <= (start_square[0] + square[0]) < 8) and (0 <= (start_square[1] + square[1]) < 8):
                 end_square = (start_square[0] + square[0], start_square[1] + square[1])
-                if board[end_square[0]][end_square[1]] == "__" or board[end_square[0]][end_square[1]][0] != self.color[0]:
+                if board[end_square[0]][end_square[1]][0] != self.color[0]:
                     valid_moves.append([start_square, end_square])
-            except:
-                continue
             
-
-        print(valid_moves)
         return valid_moves
 
 class Bishop(Piece):
@@ -94,6 +90,19 @@ class Bishop(Piece):
     
     def get_valid_moves(self, board):
         valid_moves = []
+        directions = [(1, -1), (1, 1), (-1, 1), (-1, -1)]
+        start_square = self.position
+        for d in directions:
+            for i in range (1, 8):
+                if 0 <= (start_square[0] + i*d[0]) < 8 and 0 <= (start_square[1] + i*d[1]) < 8:
+                    end_square = (start_square[0] + i*d[0], start_square[1] + i*d[1])
+                    if board[end_square[0]][end_square[1]] == "__":
+                        valid_moves.append([start_square, end_square])   
+                    elif board[end_square[0]][end_square[1]][0] != self.color[0]:
+                        valid_moves.append([start_square, end_square])
+                        break
+                    else: 
+                        break
         return valid_moves
 
 class Rook(Piece):
@@ -102,6 +111,20 @@ class Rook(Piece):
 
     def get_valid_moves(self, board):
         valid_moves = []
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        start_square = self.position
+        for d in directions:
+            for i in range (1, 8):
+                if 0 <= (start_square[0] + i*d[0]) < 8 and 0 <= (start_square[1] + i*d[1]) < 8:
+                    end_square = (start_square[0] + i*d[0], start_square[1] + i*d[1])
+                    if board[end_square[0]][end_square[1]] == "__":
+                        valid_moves.append([start_square, end_square])   
+                    elif board[end_square[0]][end_square[1]][0] != self.color[0]:
+                        valid_moves.append([start_square, end_square])
+                        break
+                    else: 
+                        break
+
         return valid_moves
 
 class Queen(Piece):
@@ -110,6 +133,10 @@ class Queen(Piece):
 
     def get_valid_moves(self, board):
         valid_moves = []
+        ROOK = Rook(self.color, self.position)
+        BISHOP = Bishop(self.color, self.position)
+        valid_moves.extend(ROOK.get_valid_moves(board))
+        valid_moves.extend(BISHOP.get_valid_moves(board))
         return valid_moves
 
 class King(Piece):
@@ -120,4 +147,12 @@ class King(Piece):
     
     def get_valid_moves(self, board):
         valid_moves = []
+        directions = [(1, 0), (1, -1), (1, 1), (0, 1), (0, -1), (-1, 0), (-1, -1), (-1, 1)]
+        start_square = self.position
+        for d in directions:
+            if 0 <= (start_square[0] + d[0]) < 8 and 0 <= (start_square[1] + d[1]) < 8:
+                end_square = (start_square[0] + d[0], start_square[1] + d[1])
+                if board[end_square[0]][end_square[1]][0] != self.color[0]:
+                    valid_moves.append([start_square, end_square])
+
         return valid_moves
