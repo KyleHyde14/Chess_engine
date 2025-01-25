@@ -93,9 +93,8 @@ def main():
                         sqClicked = ()
                         continue
                     else:
-                        move = playerClicks
-                        print(move)
-                        if move in gs.get_all_valid_moves():                            
+                        move = pieces.Move(playerClicks[0], playerClicks[1], gs.board)
+                        if move in gs.get_all_valid_moves():                    
                             gs.make_move(move)
                             playerClicks = []
                             sqClicked = ()

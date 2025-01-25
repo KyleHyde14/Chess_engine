@@ -13,6 +13,9 @@ class Pawn(Piece):
             self.has_moved = False
         else:
             self.has_moved = True
+        self.attacking_squares = [(self.position[0] + self.direction, self.position[1] - 1), (self.position[0] + self.direction, self.position[1] + 1)]
+        
+        
     
     def get_valid_moves(self, board):
         valid_moves = []
@@ -21,49 +24,32 @@ class Pawn(Piece):
                 if board[self.position[0] - 2][self.position[1]] == "__":
                     start_square = self.position
                     end_square = (self.position[0] + self.direction * 2, self.position[1])
-                    valid_moves.append([start_square, end_square])
+                    valid_moves.append(Move(start_square, end_square, board))
 
             if board[self.position[0] - 1][self.position[1]] == "__":
                 start_square = self.position
                 end_square = (self.position[0] + self.direction, self.position[1])
-                valid_moves.append([start_square, end_square])
-
-            if self.position[1] == 0:
-                diagonals = [(self.position[0] + self.direction, self.position[1] + 1)]
-            elif self.position[1] == 7:
-                diagonals = [(self.position[0] + self.direction, self.position[1] - 1)]
-            else:
-                diagonals = [(self.position[0] + self.direction, self.position[1] - 1), (self.position[0] + self.direction, self.position[1] + 1)]
-
-            for square in diagonals:
-                if board[square[0]][square[1]] != "__" and board[square[0]][square[1]][0] == 'b':
-                    start_square = self.position
-                    end_square = square
-                    valid_moves.append([start_square, end_square])
+                valid_moves.append(Move(start_square, end_square, board))
                                 
         else:
             if not self.has_moved:
                 if board[self.position[0] + 2][self.position[1]] == "__" and not self.has_moved:
                     start_square = self.position
                     end_square = (self.position[0] + self.direction * 2, self.position[1])
-                    valid_moves.append([start_square, end_square])
+                    valid_moves.append(Move(start_square, end_square, board))
             if board[self.position[0] + 1][self.position[1]] == "__":
                 start_square = self.position
                 end_square = (self.position[0] + self.direction, self.position[1])
-                valid_moves.append([start_square, end_square])
+                valid_moves.append(Move(start_square, end_square, board))
 
-            if self.position[1] == 0:
-                diagonals = [(self.position[0] + self.direction, self.position[1] + 1)]
-            elif self.position[1] == 7:
-                diagonals = [(self.position[0] + self.direction, self.position[1] - 1)]
-            else:
-                diagonals = [(self.position[0] + self.direction, self.position[1] - 1), (self.position[0] + self.direction, self.position[1] + 1)]
+        diagonals = [(self.position[0] + self.direction, self.position[1] - 1), (self.position[0] + self.direction, self.position[1] + 1)]
 
-            for square in diagonals:
-                if board[square[0]][square[1]] != "__" and board[square[0]][square[1]][0] == 'w':
+        for square in diagonals:
+            if 0 <= square[0] < 8 and 0 <= square[1] < 8:
+                if board[square[0]][square[1]] != "__" and board[square[0]][square[1]][0] != self.color[0]:
                     start_square = self.position
                     end_square = square
-                    valid_moves.append([start_square, end_square])
+                    valid_moves.append(Move(start_square, end_square, board))
 
         return valid_moves
 
@@ -80,7 +66,7 @@ class Knight(Piece):
             if (0 <= (start_square[0] + square[0]) < 8) and (0 <= (start_square[1] + square[1]) < 8):
                 end_square = (start_square[0] + square[0], start_square[1] + square[1])
                 if board[end_square[0]][end_square[1]][0] != self.color[0]:
-                    valid_moves.append([start_square, end_square])
+                    valid_moves.append(Move(start_square, end_square, board))
             
         return valid_moves
 
@@ -97,12 +83,13 @@ class Bishop(Piece):
                 if 0 <= (start_square[0] + i*d[0]) < 8 and 0 <= (start_square[1] + i*d[1]) < 8:
                     end_square = (start_square[0] + i*d[0], start_square[1] + i*d[1])
                     if board[end_square[0]][end_square[1]] == "__":
-                        valid_moves.append([start_square, end_square])   
+                        valid_moves.append(Move(start_square, end_square, board))   
                     elif board[end_square[0]][end_square[1]][0] != self.color[0]:
-                        valid_moves.append([start_square, end_square])
+                        valid_moves.append(Move(start_square, end_square, board))
                         break
                     else: 
                         break
+
         return valid_moves
 
 class Rook(Piece):
@@ -118,9 +105,9 @@ class Rook(Piece):
                 if 0 <= (start_square[0] + i*d[0]) < 8 and 0 <= (start_square[1] + i*d[1]) < 8:
                     end_square = (start_square[0] + i*d[0], start_square[1] + i*d[1])
                     if board[end_square[0]][end_square[1]] == "__":
-                        valid_moves.append([start_square, end_square])   
+                        valid_moves.append(Move(start_square, end_square, board))   
                     elif board[end_square[0]][end_square[1]][0] != self.color[0]:
-                        valid_moves.append([start_square, end_square])
+                        valid_moves.append(Move(start_square, end_square, board))
                         break
                     else: 
                         break
@@ -153,6 +140,19 @@ class King(Piece):
             if 0 <= (start_square[0] + d[0]) < 8 and 0 <= (start_square[1] + d[1]) < 8:
                 end_square = (start_square[0] + d[0], start_square[1] + d[1])
                 if board[end_square[0]][end_square[1]][0] != self.color[0]:
-                    valid_moves.append([start_square, end_square])
+                    valid_moves.append(Move(start_square, end_square, board))
 
         return valid_moves
+    
+class Move():
+    def __init__(self, start_square, end_square, board):
+        self.start_square = start_square
+        self.end_square = end_square
+        self.piece_moved = board[start_square[0]][start_square[1]]
+        self.piece_captured = board[end_square[0]][end_square[1]]
+    
+    def __eq__(self, other):
+        if isinstance(other, Move):
+            return self.start_square == other.start_square and self.end_square == other.end_square
+        
+        return False
