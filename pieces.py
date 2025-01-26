@@ -12,11 +12,8 @@ class Pawn(Piece):
         if (self.position[0] == 6 and self.color == 'white') or (self.position[0] == 1 and self.color == 'black'):
             self.has_moved = False
         else:
-            self.has_moved = True
-        self.attacking_squares = [(self.position[0] + self.direction, self.position[1] - 1), (self.position[0] + self.direction, self.position[1] + 1)]
-        
-        
-    
+            self.has_moved = True      
+            
     def get_valid_moves(self, board):
         valid_moves = []
         if self.color == 'white':
@@ -59,9 +56,9 @@ class Knight(Piece):
         super().__init__('H', color, position)
     
     def get_valid_moves(self, board):
-        landing_squares = [(-2, -1), (-2, 1), (2, -1), (2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2)]
-        start_square = self.position
         valid_moves = []
+        landing_squares = [(-2, -1), (-2, 1), (2, -1), (2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2)]
+        start_square = self.position        
         for square in landing_squares:
             if (0 <= (start_square[0] + square[0]) < 8) and (0 <= (start_square[1] + square[1]) < 8):
                 end_square = (start_square[0] + square[0], start_square[1] + square[1])
@@ -156,3 +153,5 @@ class Move():
             return self.start_square == other.start_square and self.end_square == other.end_square
         
         return False
+
+
