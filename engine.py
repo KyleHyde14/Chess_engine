@@ -82,17 +82,33 @@ class Game_state():
 
         return all_possible_moves
     
-    def get_legal_moves(self):
+    def get_legal_moves(self, moves):
         legal_moves = []
-        for move in self.get_all_possible_moves():
+        for move in moves:
             self.make_move(move)
-            opponent_moves = self.get_all_possible_moves()
-            opponent_king_pos = self.black_king_pos if self.white_to_move else self.white_king_pos
-            if opponent_king_pos not in [m.end_square for m in opponent_moves]:
+            king_pos = self.black_king_pos if self.white_to_move else self.white_king_pos
+            get_attacked_squares = self.get_attacked_squares(self.board)
+            if king_pos not in get_attacked_squares:
                 legal_moves.append(move)
+            
             self.undo_move()
 
-        return legal_moves        
+        return legal_moves 
+
+       
+
+    def get_attacked_squares(self, board):
+        turn = 'w' if self.white_to_move else 'b'
+        attacked_squares = []
+        for row in range(0, 8):
+            for col in range(0, 8):
+                square = board[row][col]
+                if square != '__' and square[0] == turn:
+                    piece = PIECES[square[1]]('white' if square[0] == 'w' else 'black', (row, col))
+                    attacked_squares.extend(piece.get_attacking_squares(board))
+
+        return attacked_squares
+
 
 
     

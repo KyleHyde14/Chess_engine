@@ -49,6 +49,19 @@ class Pawn(Piece):
                     valid_moves.append(Move(start_square, end_square, board))
 
         return valid_moves
+    
+    def get_attacking_squares(self, board):
+        attacking_squares = []
+        diagonals = [(self.position[0] + self.direction, self.position[1] - 1), (self.position[0] + self.direction, self.position[1] + 1)]
+
+        for square in diagonals:
+            if 0 <= square[0] < 8 and 0 <= square[1] < 8:
+                if board[square[0]][square[1]] != "__" and board[square[0]][square[1]][0] != self.color[0]:
+                    start_square = self.position
+                    end_square = square
+                    attacking_squares.append(end_square)
+
+        return attacking_squares
 
 
 class Knight(Piece):
@@ -66,6 +79,18 @@ class Knight(Piece):
                     valid_moves.append(Move(start_square, end_square, board))
             
         return valid_moves
+    
+    def get_attacking_squares(self, board):
+        attacking_squares = []
+        landing_squares = [(-2, -1), (-2, 1), (2, -1), (2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2)]
+        start_square = self.position
+        for square in landing_squares:
+            if (0 <= (start_square[0] + square[0]) < 8) and (0 <= (start_square[1] + square[1]) < 8):
+                end_square = (start_square[0] + square[0], start_square[1] + square[1])
+                if board[end_square[0]][end_square[1]][0] != self.color[0]:
+                    attacking_squares.append(end_square)
+        
+        return attacking_squares
 
 class Bishop(Piece):
     def __init__(self, color, position):
@@ -88,6 +113,25 @@ class Bishop(Piece):
                         break
 
         return valid_moves
+    
+    def get_attacking_squares(self, board):
+        attacking_squares = []
+        directions = [(1, -1), (1, 1), (-1, 1), (-1, -1)]
+        start_square = self.position
+        for d in directions:
+            for i in range (1, 8):
+                if 0 <= (start_square[0] + i*d[0]) < 8 and 0 <= (start_square[1] + i*d[1]) < 8:
+                    end_square = (start_square[0] + i*d[0], start_square[1] + i*d[1])
+                    if board[end_square[0]][end_square[1]] == "__":
+                        attacking_squares.append(end_square)   
+                    elif board[end_square[0]][end_square[1]][0] != self.color[0]:
+                        attacking_squares.append(end_square)
+                        break
+                    else: 
+                        break
+
+        return attacking_squares
+
 
 class Rook(Piece):
     def __init__(self, color, position):
@@ -110,6 +154,24 @@ class Rook(Piece):
                         break
 
         return valid_moves
+    
+    def get_attacking_squares(self, board):
+        attacking_squares = []
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        start_square = self.position
+        for d in directions:
+            for i in range (1, 8):
+                if 0 <= (start_square[0] + i*d[0]) < 8 and 0 <= (start_square[1] + i*d[1]) < 8:
+                    end_square = (start_square[0] + i*d[0], start_square[1] + i*d[1])
+                    if board[end_square[0]][end_square[1]] == "__":
+                        attacking_squares.append(end_square)   
+                    elif board[end_square[0]][end_square[1]][0] != self.color[0]:
+                        attacking_squares.append(end_square)
+                        break
+                    else: 
+                        break
+
+        return attacking_squares
 
 class Queen(Piece):
     def __init__(self, color, position):
@@ -122,6 +184,14 @@ class Queen(Piece):
         valid_moves.extend(ROOK.get_valid_moves(board))
         valid_moves.extend(BISHOP.get_valid_moves(board))
         return valid_moves
+    
+    def get_attacking_squares(self, board):
+        attacking_squares = []
+        ROOK = Rook(self.color, self.position)
+        BISHOP = Bishop(self.color, self.position)
+        attacking_squares.extend(ROOK.get_attacking_squares(board))
+        attacking_squares.extend(BISHOP.get_attacking_squares(board))
+        return attacking_squares
 
 class King(Piece):
     def __init__(self, color, position):
@@ -140,6 +210,18 @@ class King(Piece):
                     valid_moves.append(Move(start_square, end_square, board))
 
         return valid_moves
+    
+    def get_attacking_squares(self, board):
+        attacking_squares = []
+        directions = [(1, 0), (1, -1), (1, 1), (0, 1), (0, -1), (-1, 0), (-1, -1), (-1, 1)]
+        start_square = self.position
+        for d in directions:
+            if 0 <= (start_square[0] + d[0]) < 8 and 0 <= (start_square[1] + d[1]) < 8:
+                end_square = (start_square[0] + d[0], start_square[1] + d[1])
+                if board[end_square[0]][end_square[1]][0] != self.color[0]:
+                    attacking_squares.append(end_square)
+
+        return attacking_squares
     
 class Move():
     def __init__(self, start_square, end_square, board):

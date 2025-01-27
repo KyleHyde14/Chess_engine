@@ -52,8 +52,26 @@ def draw_pieces(screen, board):
                 piece = PIECES[square[1]]("white" if color == 'w' else "black", (row, col))
                 screen.blit(IMAGES[f'{color}{piece.value}'], (col * CELL_SIZE, row * CELL_SIZE))
 
-def draw_game(screen, gs):
+def highlight_moves(screen, gs, sqClicked):
+    if not sqClicked:
+        return
+    row, col = sqClicked
+    turn = 'w' if gs.white_to_move else 'b'
+    if gs.board[row][col][0] == turn:
+        surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
+        surface.set_alpha(150)
+        surface.fill((233,215,0))
+        screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))
+        surface.set_alpha(50)
+        surface.fill((233,215,0))
+        piece = PIECES[gs.board[row][col][1]]("white" if gs.board[row][col][0] == 'w' else "black", (row, col))
+        for move in gs.get_legal_moves(gs.get_legal_moves(piece.get_valid_moves(gs.board))):
+            row, col = move.end_square
+            screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))
+
+def draw_game(screen, gs, sqClicked):
     draw_board(screen)
+    highlight_moves(screen, gs, sqClicked)
     draw_pieces(screen, gs.board)
 
 def main():
@@ -78,8 +96,11 @@ def main():
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
                 row = pos[1] // CELL_SIZE
-                if not playerClicks and gs.board[row][col] == "__":
-                    continue
+                if not playerClicks:
+                    if gs.board[row][col] == "__":
+                        continue
+                    elif gs.white_to_move and gs.board[row][col][0] == 'b' or not gs.white_to_move and gs.board[row][col][0] == 'w':
+                        continue
                 if sqClicked == (row, col):
                     sqClicked = ()
                     playerClicks = []
@@ -94,7 +115,7 @@ def main():
                         continue
                     else:
                         move = pieces.Move(playerClicks[0], playerClicks[1], gs.board)
-                        if move in gs.get_legal_moves():                    
+                        if move in gs.get_legal_moves(gs.get_all_possible_moves()):                    
                             gs.make_move(move)
                             playerClicks = []
                             sqClicked = ()
@@ -102,10 +123,11 @@ def main():
                             playerClicks = []
                             sqClicked = ()
                             continue
+                        
 
                 print(playerClicks)
 
-        draw_game(screen, gs)
+        draw_game(screen, gs, sqClicked)
 
         pygame.display.flip()
         clock.tick(FPS)
