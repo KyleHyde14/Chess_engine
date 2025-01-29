@@ -20,26 +20,41 @@ START_POSITION = [
     ["wR", "wH", "wB", "wQ", "wK", "wB", "wH", "wR"]
 ]
 
-TEST_POSITION = [
-                ['bR', 'bH', 'bB', 'bQ', 'bK', '__', '__', 'bR'],
-                ['bP', 'bP', 'bP', '__', '__', 'bP', 'bP', 'bP'], 
-                ['__', '__', '__', '__', '__', 'bH', '__', '__'],
-                ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
-                ['__', 'bB', '__', '__', '__', '__', '__', '__'], 
-                ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
-                ['wP', 'wP', 'wP', '__', 'wP', 'wP', 'wP', 'wP'], 
-                ['wR', '__', 'wB', 'wQ', 'wK', 'wB', '__', 'wR']
-                ]
+CHECK_POSITION = [
+    ['bR', 'bH', 'bB', 'bQ', 'bK', '__', '__', 'bR'],
+    ['bP', 'bP', 'bP', '__', '__', 'bP', 'bP', 'bP'], 
+    ['__', '__', '__', '__', '__', 'bH', '__', '__'],
+    ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
+    ['__', 'bB', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
+    ['wP', 'wP', 'wP', '__', 'wP', 'wP', 'wP', 'wP'], 
+    ['wR', '__', 'wB', 'wQ', 'wK', 'wB', '__', 'wR']
+]
+
+CASTLE_POSITION = [
+    ['bR', '__', '__', 'bQ', 'bK', '__', '__', 'bR'],
+    ['bP', 'bP', 'bP', '__', '__', 'bP', 'bP', 'bP'], 
+    ['__', '__', '__', '__', '__', 'bH', '__', '__'],
+    ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
+    ['__', 'bB', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
+    ['wP', 'wP', 'wP', '__', 'wP', 'wP', 'wP', 'wP'], 
+    ['wR', '__', '__', 'wQ', 'wK', '__', '__', 'wR']
+]
 
 class Game_state():
     def __init__(self):
-        self.board = START_POSITION
+        self.board = CASTLE_POSITION
         self.white_to_move = True
         self.move_log = []
         self.checkmate = False
         self.stalemate = False
         self.white_king_pos = (7, 4)
         self.black_king_pos = (0, 4)
+        self.white_ksc = True
+        self.white_qsc = True
+        self.black_ksc = True
+        self.black_qsc = True
     
     def make_move(self, move):
         start_row, start_col = move.start_square
