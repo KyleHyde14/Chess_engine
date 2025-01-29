@@ -115,10 +115,12 @@ def main():
                         continue
                     else:
                         move = pieces.Move(playerClicks[0], playerClicks[1], gs.board)
-                        if move in gs.get_legal_moves(gs.get_all_possible_moves()):                    
-                            gs.make_move(move)
-                            playerClicks = []
-                            sqClicked = ()
+                        legal_moves = gs.get_legal_moves(gs.get_all_possible_moves())
+                        for i in range(len(legal_moves)):
+                            if move == legal_moves[i]:                    
+                                gs.make_move(legal_moves[i])
+                                playerClicks = []
+                                sqClicked = ()
                         else:
                             playerClicks = []
                             sqClicked = ()

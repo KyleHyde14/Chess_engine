@@ -209,7 +209,28 @@ class King(Piece):
                 if board[end_square[0]][end_square[1]][0] != self.color[0]:
                     valid_moves.append(Move(start_square, end_square, board))
 
+        valid_moves.extend(self.get_castle_moves(board))
+
         return valid_moves
+    
+    def get_castle_moves(self, board, ksc = True, qsc = True):
+        castle_moves = []
+        directions = [(0, 1), (0, -1), (0, 2), (0, -2)]
+        start_square = self.position
+        if not ksc and not qsc:
+            return []
+        if ksc:
+            directions = [(0, 1), (0, 2)]
+            if all(board[start_square[0]][start_square[1] + d[1]] == "__" for d in directions):
+                end_square = (start_square[0], start_square[1] + directions[1][1])
+                castle_moves.append(Move(start_square, end_square, board, castle = True))
+        if qsc:
+            directions = [(0, -1), (0, -2), (0, -3)]
+            if all(board[start_square[0]][start_square[1] + d[1]] == "__" for d in directions):
+                end_square = (start_square[0], start_square[1] + directions[1][1])
+                castle_moves.append(Move(start_square, end_square, board, castle = True))
+
+        return castle_moves
     
     def get_attacking_squares(self, board):
         attacking_squares = []
@@ -224,11 +245,14 @@ class King(Piece):
         return attacking_squares
     
 class Move():
-    def __init__(self, start_square, end_square, board):
+    def __init__(self, start_square, end_square, board, castle = False, promotion = False, enPassant = False):
         self.start_square = start_square
         self.end_square = end_square
         self.piece_moved = board[start_square[0]][start_square[1]]
         self.piece_captured = board[end_square[0]][end_square[1]]
+        self.castle = castle
+        self.promotion = promotion
+        self.enPassant = enPassant
     
     def __eq__(self, other):
         if isinstance(other, Move):

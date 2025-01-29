@@ -32,15 +32,17 @@ CHECK_POSITION = [
 ]
 
 CASTLE_POSITION = [
-    ['bR', '__', '__', 'bQ', 'bK', '__', '__', 'bR'],
+    ['bR', '__', '__', '__', 'bK', '__', '__', 'bR'],
     ['bP', 'bP', 'bP', '__', '__', 'bP', 'bP', 'bP'], 
     ['__', '__', '__', '__', '__', 'bH', '__', '__'],
     ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
-    ['__', 'bB', '__', '__', '__', '__', '__', '__'], 
+    ['__', 'bH', '__', '__', '__', '__', '__', '__'], 
     ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
     ['wP', 'wP', 'wP', '__', 'wP', 'wP', 'wP', 'wP'], 
-    ['wR', '__', '__', 'wQ', 'wK', '__', '__', 'wR']
+    ['wR', '__', '__', '__', 'wK', '__', '__', 'wR']
 ]
+
+# TODO Legal check castling
 
 class Game_state():
     def __init__(self):
@@ -51,10 +53,6 @@ class Game_state():
         self.stalemate = False
         self.white_king_pos = (7, 4)
         self.black_king_pos = (0, 4)
-        self.white_ksc = True
-        self.white_qsc = True
-        self.black_ksc = True
-        self.black_qsc = True
     
     def make_move(self, move):
         start_row, start_col = move.start_square
@@ -67,11 +65,15 @@ class Game_state():
             self.white_king_pos = move.end_square
         elif move.piece_moved == 'bK': 
             self.black_king_pos = move.end_square
-        if move.piece_captured == 'wK':
-            self.white_king_pos = None
-        elif move.piece_captured == 'bK':
-            self.black_king_pos = None
 
+        if move.castle:
+            if end_col - start_col == 2:
+                self.board[end_row][end_col -1] = self.board[end_row][end_col +1]
+                self.board[end_row][end_col +1] = "__"
+            elif end_col - start_col == - 2:
+                self.board[end_row][end_col +1] = self.board[end_row][end_col -2]
+                self.board[end_row][end_col -2] = "__"
+            
     def undo_move(self):
         if len(self.move_log) != 0:
             move = self.move_log.pop()
@@ -84,6 +86,14 @@ class Game_state():
                 self.white_king_pos = move.start_square
             elif move.piece_moved == 'bK':
                 self.black_king_pos = move.start_square
+
+            if move.castle:
+                if end_col - start_col == 2:
+                    self.board[end_row][end_col +1] = self.board[end_row][end_col -1]
+                    self.board[end_row][end_col -1] = "__"
+                elif end_col - start_col == - 2:
+                    self.board[end_row][end_col -2] = self.board[end_row][end_col +1]
+                    self.board[end_row][end_col +1] = "__"
 
     def get_all_possible_moves(self):
         all_possible_moves = []
