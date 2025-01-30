@@ -65,7 +65,7 @@ def highlight_moves(screen, gs, sqClicked):
         surface.set_alpha(50)
         surface.fill((233,215,0))
         piece = PIECES[gs.board[row][col][1]]("white" if gs.board[row][col][0] == 'w' else "black", (row, col))
-        for move in gs.get_legal_moves(gs.get_legal_moves(piece.get_valid_moves(gs.board))):
+        for move in gs.get_legal_moves(piece.get_valid_moves(gs.board)):
             row, col = move.end_square
             screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))
 
