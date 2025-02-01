@@ -65,6 +65,14 @@ def highlight_moves(screen, gs, sqClicked):
         surface.set_alpha(50)
         surface.fill((233,215,0))
         piece = PIECES[gs.board[row][col][1]]("white" if gs.board[row][col][0] == 'w' else "black", (row, col))
+        if piece.value == 'K':
+            opponent_turn = 'b' if gs.white_to_move else 'w'
+            attacked_squares = gs.get_attacked_squares(gs.board, opponent_turn)
+            ksc = gs.white_ksc if gs.white_to_move else gs.black_ksc
+            qsc = gs.white_qsc if gs.white_to_move else gs.black_qsc
+            for move in gs.get_legal_moves(piece.get_castle_moves(gs.board, attacked_squares, ksc, qsc)):
+                row, col = move.end_square
+                screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))
         for move in gs.get_legal_moves(piece.get_valid_moves(gs.board)):
             row, col = move.end_square
             screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))

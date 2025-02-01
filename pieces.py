@@ -209,26 +209,26 @@ class King(Piece):
                 if board[end_square[0]][end_square[1]][0] != self.color[0]:
                     valid_moves.append(Move(start_square, end_square, board))
 
-        valid_moves.extend(self.get_castle_moves(board))
-
         return valid_moves
     
-    def get_castle_moves(self, board, ksc = True, qsc = True):
+    def get_castle_moves(self, board, attacked_squares, ksc, qsc):
         castle_moves = []
-        directions = [(0, 1), (0, -1), (0, 2), (0, -2)]
         start_square = self.position
+        if self.position in attacked_squares:
+            return []
         if not ksc and not qsc:
             return []
         if ksc:
-            directions = [(0, 1), (0, 2)]
-            if all(board[start_square[0]][start_square[1] + d[1]] == "__" for d in directions):
-                end_square = (start_square[0], start_square[1] + directions[1][1])
-                castle_moves.append(Move(start_square, end_square, board, castle = True))
+            if board[start_square[0]][start_square[1]+1] == "__" and board[start_square[0]][start_square[1]+2] == "__":
+                if (start_square[0], start_square[1]+1) not in attacked_squares and (start_square[0], start_square[1]+2) not in attacked_squares:
+                    end_square = (start_square[0], + start_square[1]+2)
+                    castle_moves.append(Move(start_square, end_square, board, castle=True))
+
         if qsc:
-            directions = [(0, -1), (0, -2), (0, -3)]
-            if all(board[start_square[0]][start_square[1] + d[1]] == "__" for d in directions):
-                end_square = (start_square[0], start_square[1] + directions[1][1])
-                castle_moves.append(Move(start_square, end_square, board, castle = True))
+            if board[start_square[0]][start_square[1]-1] == "__" and board[start_square[0]][start_square[1]-2] == "__" and board[start_square[0]][start_square[1]-3] == "__":
+                if (start_square[0], start_square[1]-1) not in attacked_squares and (start_square[0], start_square[1]-2) not in attacked_squares:
+                    end_square = (start_square[0], + start_square[1]-2)
+                    castle_moves.append(Move(start_square, end_square, board, castle=True))
 
         return castle_moves
     

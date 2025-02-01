@@ -36,7 +36,7 @@ CASTLE_POSITION = [
     ['bP', 'bP', 'bP', '__', '__', 'bP', 'bP', 'bP'], 
     ['__', '__', '__', '__', '__', 'bH', '__', '__'],
     ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
-    ['__', 'bH', '__', '__', '__', '__', '__', '__'], 
+    ['bB', 'bB', '__', '__', '__', '__', '__', '__'], 
     ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
     ['wP', 'wP', 'wP', '__', 'wP', 'wP', 'wP', 'wP'], 
     ['wR', '__', '__', '__', 'wK', '__', '__', 'wR']
@@ -53,6 +53,12 @@ class Game_state():
         self.stalemate = False
         self.white_king_pos = (7, 4)
         self.black_king_pos = (0, 4)
+        self.white_ksc = True
+        self.white_qsc = True
+        self.black_ksc = True
+        self.black_qsc = True
+        self.castle_rights_log = [(True, True, True, True)]
+
     
     def make_move(self, move):
         start_row, start_col = move.start_square
@@ -63,8 +69,34 @@ class Game_state():
         self.white_to_move = not self.white_to_move
         if move.piece_moved == 'wK':
             self.white_king_pos = move.end_square
+            self.white_ksc = False
+            self.white_qsc = False
         elif move.piece_moved == 'bK': 
             self.black_king_pos = move.end_square
+            self.black_ksc = False
+            self.black_qsc = False
+        elif move.piece_moved == 'wR':
+            if move.start_square == (7, 7):
+                self.white_ksc = False
+            elif move.start_square == (0, 7):
+                self.white_qsc = False
+        elif move.piece_moved == 'bR':
+            if move.start_square == (0, 7):
+                self.black_ksc = False
+            elif move.start_square == (0, 0):
+                self.black_qsc = False
+        
+        if move.piece_captured == 'wR':
+            if move.end_square == (7, 7):
+                self.white_ksc = False
+            elif move.end_square == (0, 7):
+                self.white_qsc = False
+        elif move.piece_captured == 'bR':
+            if move.end_square == (0, 7):
+                self.black_ksc = False
+            elif move.end_square == (0, 0):
+                self.black_qsc = False
+
 
         if move.castle:
             if end_col - start_col == 2:
@@ -73,6 +105,9 @@ class Game_state():
             elif end_col - start_col == - 2:
                 self.board[end_row][end_col +1] = self.board[end_row][end_col -2]
                 self.board[end_row][end_col -2] = "__"
+
+        self.castle_rights_log.append((self.white_ksc, self.white_qsc,
+                                       self.black_ksc, self.black_qsc))
             
     def undo_move(self):
         if len(self.move_log) != 0:
@@ -95,6 +130,9 @@ class Game_state():
                     self.board[end_row][end_col -2] = self.board[end_row][end_col +1]
                     self.board[end_row][end_col +1] = "__"
 
+            self.castle_rights_log.pop()
+            self.white_ksc, self.white_qsc, self.black_ksc, self.black_qsc = self.castle_rights_log[-1]
+
     def get_all_possible_moves(self):
         all_possible_moves = []
         turn = 'w' if self.white_to_move else 'b'
@@ -103,6 +141,12 @@ class Game_state():
                 square = self.board[row][col]
                 if square != '__' and square[0] == turn:
                     piece = PIECES[square[1]]('white' if square[0] == 'w' else 'black', (row, col))
+                    if piece.value == 'K':
+                        opponent_turn = 'b' if self.white_to_move else 'w'
+                        attacked_squares = self.get_attacked_squares(self.board, opponent_turn)
+                        ksc = self.white_ksc if self.white_to_move else self.black_ksc
+                        qsc = self.white_qsc if self.white_to_move else self.black_qsc
+                        all_possible_moves.extend(piece.get_castle_moves(self.board, attacked_squares, ksc, qsc))
                     all_possible_moves.extend(piece.get_valid_moves(self.board))
 
         return all_possible_moves
@@ -112,8 +156,9 @@ class Game_state():
         for move in moves:
             self.make_move(move)
             king_pos = self.black_king_pos if self.white_to_move else self.white_king_pos
-            get_attacked_squares = self.get_attacked_squares(self.board)
-            if king_pos not in get_attacked_squares:
+            turn = 'w' if self.white_to_move else 'b'
+            attacked_squares = self.get_attacked_squares(self.board, turn)
+            if king_pos not in attacked_squares:
                 legal_moves.append(move)
             
             self.undo_move()
@@ -122,8 +167,7 @@ class Game_state():
 
        
 
-    def get_attacked_squares(self, board):
-        turn = 'w' if self.white_to_move else 'b'
+    def get_attacked_squares(self, board, turn):
         attacked_squares = []
         for row in range(0, 8):
             for col in range(0, 8):
