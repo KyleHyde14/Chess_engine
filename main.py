@@ -51,6 +51,48 @@ def draw_pieces(screen, board):
                 color = square[0]
                 piece = PIECES[square[1]]("white" if color == 'w' else "black", (row, col))
                 screen.blit(IMAGES[f'{color}{piece.value}'], (col * CELL_SIZE, row * CELL_SIZE))
+import pygame
+
+def draw_promotion_choices(screen, window_size, color):
+    WIDTH, HEIGHT = window_size, window_size
+    PADDING = 10  
+    PIECE_SIZE = WIDTH // 8
+    y_pos = PADDING if color == "b" else HEIGHT - PIECE_SIZE - PADDING  
+
+    options = [f'{color}Q', f'{color}R', f'{color}B', f'{color}H']
+    buttons = {}
+    start_x = (WIDTH - (PIECE_SIZE * 4 + PADDING * 3)) // 2
+
+    WOOD_COLOR = WHITE if color == 'w' else BLACK
+
+    pygame.draw.rect(screen, WOOD_COLOR, (0, y_pos - PADDING, WIDTH, PIECE_SIZE + 2 * PADDING))  
+
+    for i, piece in enumerate(options):
+        rect = pygame.Rect(start_x + i * (PIECE_SIZE + PADDING), y_pos, PIECE_SIZE, PIECE_SIZE)
+        buttons[piece] = rect
+        pygame.draw.rect(screen, (200, 200, 200), rect, border_radius=5)
+        piece_img = pygame.transform.smoothscale(IMAGES[piece], (PIECE_SIZE, PIECE_SIZE))
+        screen.blit(piece_img, rect.topleft)
+
+    pygame.display.flip()
+    return buttons  
+
+def get_promotion_choice(screen, window_size, color):
+    buttons = draw_promotion_choices(screen, window_size, color)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for piece, rect in buttons.items():
+                    x, y = event.pos
+                    if rect.collidepoint(x, y):
+                        return piece
+                return None
+                    
+
 
 def highlight_moves(screen, gs, sqClicked):
     if not sqClicked:
@@ -125,10 +167,16 @@ def main():
                         move = pieces.Move(playerClicks[0], playerClicks[1], gs.board)
                         legal_moves = gs.get_legal_moves(gs.get_all_possible_moves())
                         for i in range(len(legal_moves)):
-                            if move == legal_moves[i]:                    
-                                gs.make_move(legal_moves[i])
-                                playerClicks = []
-                                sqClicked = ()
+                            if move == legal_moves[i]:  
+                                if move.promotion:
+                                    color = 'w' if gs.white_to_move else 'b'
+                                    new_piece = get_promotion_choice(screen, WINDOW_SIZE, color)
+                                    if new_piece:
+                                        gs.make_move(move, new_piece=new_piece)  
+                                else:            
+                                    gs.make_move(legal_moves[i])
+                                    playerClicks = []
+                                    sqClicked = ()
                         else:
                             playerClicks = []
                             sqClicked = ()

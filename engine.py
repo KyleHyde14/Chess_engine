@@ -42,11 +42,22 @@ CASTLE_POSITION = [
     ['wR', '__', '__', '__', 'wK', '__', '__', 'wR']
 ]
 
+PROMOTION_POSITION = [
+    ['__', '__', '__', '__', 'bK', '__', '__', '__'],
+    ['__', '__', 'wP', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', 'bH', '__', '__'],
+    ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
+    ['__', 'bP', '__', '__', '__', '__', 'bP', '__'], 
+    ['wR', '__', '__', '__', 'wK', '__', '__', 'wR']
+]
+
 # TODO Legal check castling
 
 class Game_state():
     def __init__(self):
-        self.board = CASTLE_POSITION
+        self.board = PROMOTION_POSITION
         self.white_to_move = True
         self.move_log = []
         self.checkmate = False
@@ -60,7 +71,7 @@ class Game_state():
         self.castle_rights_log = [(True, True, True, True)]
 
     
-    def make_move(self, move):
+    def make_move(self, move, new_piece=None):
         start_row, start_col = move.start_square
         end_row, end_col = move.end_square
         self.board[start_row][start_col] = "__"
@@ -78,7 +89,7 @@ class Game_state():
         elif move.piece_moved == 'wR':
             if move.start_square == (7, 7):
                 self.white_ksc = False
-            elif move.start_square == (0, 7):
+            elif move.start_square == (7, 0):
                 self.white_qsc = False
         elif move.piece_moved == 'bR':
             if move.start_square == (0, 7):
@@ -89,7 +100,8 @@ class Game_state():
         if move.piece_captured == 'wR':
             if move.end_square == (7, 7):
                 self.white_ksc = False
-            elif move.end_square == (0, 7):
+            elif move.end_square == (7, 0):
+                print('captured wR at', move.end_square)
                 self.white_qsc = False
         elif move.piece_captured == 'bR':
             if move.end_square == (0, 7):
@@ -105,6 +117,11 @@ class Game_state():
             elif end_col - start_col == - 2:
                 self.board[end_row][end_col +1] = self.board[end_row][end_col -2]
                 self.board[end_row][end_col -2] = "__"
+        elif move.promotion:
+            if new_piece:
+                self.board[end_row][end_col] = new_piece
+            else:
+                self.board[end_row][end_col] = f'{move.piece_moved[0]}Q'
 
         self.castle_rights_log.append((self.white_ksc, self.white_qsc,
                                        self.black_ksc, self.black_qsc))
@@ -177,6 +194,7 @@ class Game_state():
                     attacked_squares.extend(piece.get_attacking_squares(board))
 
         return attacked_squares
+    
 
 
 

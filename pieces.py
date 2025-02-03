@@ -57,7 +57,6 @@ class Pawn(Piece):
         for square in diagonals:
             if 0 <= square[0] < 8 and 0 <= square[1] < 8:
                 if board[square[0]][square[1]] != "__" and board[square[0]][square[1]][0] != self.color[0]:
-                    start_square = self.position
                     end_square = square
                     attacking_squares.append(end_square)
 
@@ -245,14 +244,17 @@ class King(Piece):
         return attacking_squares
     
 class Move():
-    def __init__(self, start_square, end_square, board, castle = False, promotion = False, enPassant = False):
+    def __init__(self, start_square, end_square, board, castle=False, enPassant=False):
         self.start_square = start_square
         self.end_square = end_square
         self.piece_moved = board[start_square[0]][start_square[1]]
         self.piece_captured = board[end_square[0]][end_square[1]]
         self.castle = castle
-        self.promotion = promotion
         self.enPassant = enPassant
+        if (self.piece_moved == 'wP' or self.piece_moved == 'bP') and (end_square[0] == 0 or end_square[0] == 7):
+            self.promotion = True
+        else:
+            self.promotion = False
     
     def __eq__(self, other):
         if isinstance(other, Move):
