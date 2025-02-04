@@ -43,17 +43,15 @@ CASTLE_POSITION = [
 ]
 
 PROMOTION_POSITION = [
-    ['__', '__', '__', '__', 'bK', '__', '__', '__'],
-    ['__', '__', 'wP', '__', '__', '__', '__', '__'], 
-    ['__', '__', '__', '__', '__', 'bH', '__', '__'],
-    ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
+    ['bR', '__', '__', '__', 'bK', '__', '__', 'bR'],
+    ['__', 'wP', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', '__', '__', '__'],
+    ['__', '__', '__', '__', '__', '__', '__', '__'], 
     ['__', '__', '__', '__', '__', '__', '__', '__'], 
     ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
     ['__', 'bP', '__', '__', '__', '__', 'bP', '__'], 
     ['wR', '__', '__', '__', 'wK', '__', '__', 'wR']
 ]
-
-# TODO Legal check castling
 
 class Game_state():
     def __init__(self):
@@ -101,7 +99,6 @@ class Game_state():
             if move.end_square == (7, 7):
                 self.white_ksc = False
             elif move.end_square == (7, 0):
-                print('captured wR at', move.end_square)
                 self.white_qsc = False
         elif move.piece_captured == 'bR':
             if move.end_square == (0, 7):

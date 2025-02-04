@@ -56,7 +56,7 @@ class Pawn(Piece):
 
         for square in diagonals:
             if 0 <= square[0] < 8 and 0 <= square[1] < 8:
-                if board[square[0]][square[1]] != "__" and board[square[0]][square[1]][0] != self.color[0]:
+                if board[square[0]][square[1]][0] != self.color[0]:
                     end_square = square
                     attacking_squares.append(end_square)
 

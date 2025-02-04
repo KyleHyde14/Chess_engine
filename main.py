@@ -55,7 +55,7 @@ import pygame
 
 def draw_promotion_choices(screen, window_size, color):
     WIDTH, HEIGHT = window_size, window_size
-    PADDING = 10  
+    PADDING = 20  
     PIECE_SIZE = WIDTH // 8
     y_pos = PADDING if color == "b" else HEIGHT - PIECE_SIZE - PADDING  
 
@@ -63,14 +63,14 @@ def draw_promotion_choices(screen, window_size, color):
     buttons = {}
     start_x = (WIDTH - (PIECE_SIZE * 4 + PADDING * 3)) // 2
 
-    WOOD_COLOR = WHITE if color == 'w' else BLACK
+    BACKGROUND = (50, 50, 50)
 
-    pygame.draw.rect(screen, WOOD_COLOR, (0, y_pos - PADDING, WIDTH, PIECE_SIZE + 2 * PADDING))  
+    pygame.draw.rect(screen, BACKGROUND, (0, y_pos - PADDING, WIDTH, PIECE_SIZE + 2 * PADDING))  
 
     for i, piece in enumerate(options):
         rect = pygame.Rect(start_x + i * (PIECE_SIZE + PADDING), y_pos, PIECE_SIZE, PIECE_SIZE)
         buttons[piece] = rect
-        pygame.draw.rect(screen, (200, 200, 200), rect, border_radius=5)
+        pygame.draw.rect(screen, (170, 170, 170), rect, border_radius=5)
         piece_img = pygame.transform.smoothscale(IMAGES[piece], (PIECE_SIZE, PIECE_SIZE))
         screen.blit(piece_img, rect.topleft)
 
