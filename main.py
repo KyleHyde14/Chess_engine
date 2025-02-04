@@ -119,6 +119,9 @@ def highlight_moves(screen, gs, sqClicked):
             row, col = move.end_square
             screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))
 
+def draw_end_message(screen, gs):
+    pass
+
 def draw_game(screen, gs, sqClicked):
     draw_board(screen)
     highlight_moves(screen, gs, sqClicked)
