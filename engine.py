@@ -53,9 +53,20 @@ PROMOTION_POSITION = [
     ['wR', '__', '__', '__', 'wK', '__', '__', 'wR']
 ]
 
+ENPASSANT_POSITION = [
+    ['bR', 'bH', 'bB', 'bQ', 'bK', '__', '__', 'bR'],
+    ['bP', 'bP', 'bP', '__', '__', 'bP', 'bP', '__'], 
+    ['__', '__', '__', '__', '__', '__', '__', '__'],
+    ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
+    ['__', 'bB', '__', '__', '__', '__', '__', 'bP'], 
+    ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
+    ['wP', 'wP', 'wP', '__', 'wP', 'wP', 'wP', 'wP'], 
+    ['wR', '__', 'wB', 'wQ', 'wK', 'wB', '__', 'wR']
+]
+
 class Game_state():
     def __init__(self):
-        self.board = PROMOTION_POSITION
+        self.board = ENPASSANT_POSITION
         self.white_to_move = True
         self.move_log = []
         self.checkmate = False

@@ -17,27 +17,26 @@ class Pawn(Piece):
     def get_valid_moves(self, board):
         valid_moves = []
         if self.color == 'white':
-            if not self.has_moved:
-                if board[self.position[0] - 2][self.position[1]] == "__":
-                    start_square = self.position
-                    end_square = (self.position[0] + self.direction * 2, self.position[1])
-                    valid_moves.append(Move(start_square, end_square, board))
-
             if board[self.position[0] - 1][self.position[1]] == "__":
                 start_square = self.position
                 end_square = (self.position[0] + self.direction, self.position[1])
                 valid_moves.append(Move(start_square, end_square, board))
-                                
+                if not self.has_moved:
+                    if board[self.position[0] - 2][self.position[1]] == "__":
+                        start_square = self.position
+                        end_square = (self.position[0] + self.direction * 2, self.position[1])
+                        valid_moves.append(Move(start_square, end_square, board))
+
         else:
-            if not self.has_moved:
-                if board[self.position[0] + 2][self.position[1]] == "__" and not self.has_moved:
-                    start_square = self.position
-                    end_square = (self.position[0] + self.direction * 2, self.position[1])
-                    valid_moves.append(Move(start_square, end_square, board))
             if board[self.position[0] + 1][self.position[1]] == "__":
                 start_square = self.position
                 end_square = (self.position[0] + self.direction, self.position[1])
                 valid_moves.append(Move(start_square, end_square, board))
+                if not self.has_moved:
+                    if board[self.position[0] + 2][self.position[1]] == "__" and not self.has_moved:
+                        start_square = self.position
+                        end_square = (self.position[0] + self.direction * 2, self.position[1])
+                        valid_moves.append(Move(start_square, end_square, board))       
 
         diagonals = [(self.position[0] + self.direction, self.position[1] - 1), (self.position[0] + self.direction, self.position[1] + 1)]
 
