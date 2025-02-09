@@ -29,13 +29,6 @@ def load_images():
             current_color = 'w' if color == 'white' else 'b'
             IMAGES[f'{current_color}{piece}'] = img
 
-# def show_positions(board):
-#     for i in range(BOARD_SIZE):
-#         for j in range(BOARD_SIZE):
-#             if board[i][j] != "__":
-#                 piece = PIECES[board[i][j][1]]("white" if board[i][j][0] == 'w' else "black", (i, j))
-#                 print(piece.value, piece.position)
-
 def draw_board(screen):
     for row in range(BOARD_SIZE):
         for col in range(BOARD_SIZE):
@@ -114,6 +107,12 @@ def highlight_moves(screen, gs, sqClicked):
             qsc = gs.white_qsc if gs.white_to_move else gs.black_qsc
             for move in gs.get_legal_moves(piece.get_castle_moves(gs.board, attacked_squares, ksc, qsc)):
                 row, col = move.end_square
+                screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))
+        elif piece.value == 'P':
+            en_passant_square = gs.en_passant_square
+            en_passant_move = piece.get_en_passant_moves(gs.board, en_passant_square)
+            if en_passant_move:
+                row, col = en_passant_move.end_square
                 screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))
         for move in gs.get_legal_moves(piece.get_valid_moves(gs.board)):
             row, col = move.end_square

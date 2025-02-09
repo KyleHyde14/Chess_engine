@@ -50,14 +50,14 @@ class Pawn(Piece):
         return valid_moves
     
     def get_en_passant_moves(self, board, en_passant_square):
-        en_passant_moves = []
         attacked_squares = self.get_attacking_squares(board)
         if en_passant_square in attacked_squares:
             start_square = self.position
             end_square = en_passant_square
-            en_passant_moves.append(Move(start_square, end_square, board, enPassant=True))
-
-        return en_passant_moves
+            en_passant_move = Move(start_square, end_square, board, enPassant=True)
+            return en_passant_move
+        else:
+            return None
     
     def get_attacking_squares(self, board):
         attacking_squares = []

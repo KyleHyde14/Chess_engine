@@ -167,7 +167,7 @@ class Game_state():
             if move.enPassant:
                 self.board[end_row][end_col] = '__'
                 self.board[start_row][end_col] = move.piece_captured
-                
+
             if move.castle:
                 if end_col - start_col == 2:
                     self.board[end_row][end_col +1] = self.board[end_row][end_col -1]
@@ -196,7 +196,9 @@ class Game_state():
                     elif piece.value == 'P':
                         en_passant_square = self.en_passant_square
                         if en_passant_square != ():
-                            all_possible_moves.extend(piece.get_en_passant_moves(self.board, en_passant_square))
+                            en_passant_move = piece.get_en_passant_moves(self.board, en_passant_square)
+                            if en_passant_move:
+                                all_possible_moves.append(en_passant_move)
                     all_possible_moves.extend(piece.get_valid_moves(self.board))
 
         return all_possible_moves
