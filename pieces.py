@@ -49,6 +49,16 @@ class Pawn(Piece):
 
         return valid_moves
     
+    def get_en_passant_moves(self, board, en_passant_square):
+        en_passant_moves = []
+        attacked_squares = self.get_attacking_squares(board)
+        if en_passant_square in attacked_squares:
+            start_square = self.position
+            end_square = en_passant_square
+            en_passant_moves.append(Move(start_square, end_square, board, enPassant=True))
+
+        return en_passant_moves
+    
     def get_attacking_squares(self, board):
         attacking_squares = []
         diagonals = [(self.position[0] + self.direction, self.position[1] - 1), (self.position[0] + self.direction, self.position[1] + 1)]
@@ -254,6 +264,9 @@ class Move():
             self.promotion = True
         else:
             self.promotion = False
+
+        if self.enPassant:
+            self.piece_captured = 'bP' if self.piece_moved == 'wP' else 'wP'
     
     def __eq__(self, other):
         if isinstance(other, Move):

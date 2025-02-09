@@ -58,7 +58,7 @@ ENPASSANT_POSITION = [
     ['bP', 'bP', 'bP', '__', '__', 'bP', 'bP', '__'], 
     ['__', '__', '__', '__', '__', '__', '__', '__'],
     ['__', '__', '__', 'bP', 'wP', '__', '__', '__'], 
-    ['__', 'bB', '__', '__', '__', '__', '__', 'bP'], 
+    ['__', '__', '__', '__', '__', '__', '__', 'bP'], 
     ['__', '__', '__', '__', '__', 'wH', '__', '__'], 
     ['wP', 'wP', 'wP', '__', 'wP', 'wP', 'wP', 'wP'], 
     ['wR', '__', 'wB', 'wQ', 'wK', 'wB', '__', 'wR']
@@ -78,6 +78,7 @@ class Game_state():
         self.black_ksc = True
         self.black_qsc = True
         self.castle_rights_log = [(True, True, True, True)]
+        self.en_passant_square = ()
 
     
     def make_move(self, move, new_piece=None):
@@ -117,6 +118,14 @@ class Game_state():
             elif move.end_square == (0, 0):
                 self.black_qsc = False
 
+        if move.piece_moved[1] == 'P' and abs(start_row - end_row) == 2:
+            self.en_passant_square = ((start_row + end_row)//2, end_col)
+        else:
+            self.en_passant_square = ()
+        
+        if move.enPassant:
+            self.board[start_row][end_col] = '__'
+
 
         if move.castle:
             if end_col - start_col == 2:
@@ -147,6 +156,18 @@ class Game_state():
             elif move.piece_moved == 'bK':
                 self.black_king_pos = move.start_square
 
+            if move.piece_moved[1] == 'P' and abs(start_row - end_row) == 2:
+                self.en_passant_square = ()
+            
+            if len(self.move_log) != 0:
+                previous_move = self.move_log[-1]
+                if previous_move.piece_moved[1] == 'P' and abs(previous_move.end_square[0] - previous_move.start_square[0]) == 2:
+                    self.en_passant_square = ((previous_move.end_square[0] + previous_move.start_square[0])//2, previous_move.end_square[1])
+
+            if move.enPassant:
+                self.board[end_row][end_col] = '__'
+                self.board[start_row][end_col] = move.piece_captured
+                
             if move.castle:
                 if end_col - start_col == 2:
                     self.board[end_row][end_col +1] = self.board[end_row][end_col -1]
@@ -172,6 +193,10 @@ class Game_state():
                         ksc = self.white_ksc if self.white_to_move else self.black_ksc
                         qsc = self.white_qsc if self.white_to_move else self.black_qsc
                         all_possible_moves.extend(piece.get_castle_moves(self.board, attacked_squares, ksc, qsc))
+                    elif piece.value == 'P':
+                        en_passant_square = self.en_passant_square
+                        if en_passant_square != ():
+                            all_possible_moves.extend(piece.get_en_passant_moves(self.board, en_passant_square))
                     all_possible_moves.extend(piece.get_valid_moves(self.board))
 
         return all_possible_moves
