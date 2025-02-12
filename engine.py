@@ -64,9 +64,20 @@ ENPASSANT_POSITION = [
     ['wR', '__', 'wB', 'wQ', 'wK', 'wB', '__', 'wR']
 ]
 
+CHECKMATE_POSITION = [
+    ['__', '__', '__', '__', '__', '__', '__', '__'],
+    ['__', '__', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', '__', '__', 'bK'],
+    ['__', 'bR', '__', '__', '__', '__', '__', '__'], 
+    ['__', 'bR', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', '__', 'wR', '__'], 
+    ['__', '__', '__', '__', '__', '__', 'wR', '__'], 
+    ['wK', 'bR', '__', '__', '__', '__', '__', '__']
+]
+
 class Game_state():
     def __init__(self):
-        self.board = ENPASSANT_POSITION
+        self.board = START_POSITION
         self.white_to_move = True
         self.move_log = []
         self.checkmate = False
@@ -207,10 +218,7 @@ class Game_state():
         legal_moves = []
         for move in moves:
             self.make_move(move)
-            king_pos = self.black_king_pos if self.white_to_move else self.white_king_pos
-            turn = 'w' if self.white_to_move else 'b'
-            attacked_squares = self.get_attacked_squares(self.board, turn)
-            if king_pos not in attacked_squares:
+            if not self.in_check(validating=True):
                 legal_moves.append(move)
             
             self.undo_move()
@@ -230,6 +238,18 @@ class Game_state():
 
         return attacked_squares
     
+    def in_check(self, validating=False):
+        if not validating:
+            king_pos = self.white_king_pos if self.white_to_move else self.black_king_pos
+            turn = 'b' if self.white_to_move else 'w'
+            attacked_squares = self.get_attacked_squares(self.board, turn)
+        else:
+            king_pos = self.black_king_pos if self.white_to_move else self.white_king_pos
+            turn = 'w' if self.white_to_move else 'b'
+            attacked_squares = self.get_attacked_squares(self.board, turn)
+            
+        return king_pos in attacked_squares
+        
 
 
 

@@ -1,6 +1,7 @@
 import pygame
 import pieces   
 from engine import Game_state
+from brain import make_random_move
 
 WINDOW_SIZE = 512  
 BOARD_SIZE = 8     
@@ -118,8 +119,14 @@ def highlight_moves(screen, gs, sqClicked):
             row, col = move.end_square
             screen.blit(surface, (col * CELL_SIZE, row * CELL_SIZE))
 
-def draw_end_message(screen, gs):
-    pass
+def draw_end_message(screen, message):
+    width, height = screen.get_size()    
+    font = pygame.font.SysFont("Arial", 40, bold=True)
+    text_surface = font.render(message, True, (20, 20, 20))
+    text_rect = text_surface.get_rect(center=(width // 2, height // 2))
+    screen.blit(text_surface, text_rect)
+    
+    pygame.display.flip()
 
 def draw_game(screen, gs, sqClicked):
     draw_board(screen)
@@ -136,6 +143,8 @@ def main():
     load_images()
     sqClicked = ()
     playerClicks = []
+    whiteAI = False
+    blackAI = True
 
     while running:
         for event in pygame.event.get():
@@ -183,11 +192,25 @@ def main():
                             playerClicks = []
                             sqClicked = ()
                             continue
-                        
-
-                print(playerClicks)
+            if (gs.white_to_move and whiteAI) or (not gs.white_to_move and blackAI):
+                moves = gs.get_legal_moves(gs.get_all_possible_moves())
+                AImove = make_random_move(moves)
+                gs.make_move(AImove)
 
         draw_game(screen, gs, sqClicked)
+        
+        if len(gs.get_legal_moves(gs.get_all_possible_moves())) < 1:
+            while running:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                if gs.in_check():
+                    winner = 'Black' if gs.white_to_move else 'White'
+                    message = f'Checkmate! {winner} wins!'
+                else:
+                    message = "It's a Draw!!"
+
+                draw_end_message(screen, message)
 
         pygame.display.flip()
         clock.tick(FPS)
