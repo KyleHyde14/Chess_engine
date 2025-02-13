@@ -8,12 +8,13 @@ def evaluate(gs):
     return gs.count_material()
 
 def minimax(gs, depth, maximize):
+    if gs.checkmate():
+        return -float('inf') if maximize else float('inf')
+    if gs.stalemate():
+        return 0
     if depth == 0:
         return evaluate(gs)
-    elif gs.checkmate():
-        return -float('inf') if maximize else float('inf')
-    elif gs.stalemate():
-        return 0
+    
     
     if maximize:
         best_score = -float('inf')
@@ -46,6 +47,8 @@ def find_best_move(gs, depth):
         for move in valid_moves:
             gs.make_move(move)
             score = minimax(gs, depth - 1, False)
+            print(score)
+            print(move.start_square, move.end_square)
             gs.undo_move()
             if score > best_score:
                 best_score = score
