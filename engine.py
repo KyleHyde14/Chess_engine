@@ -9,6 +9,15 @@ PIECES = {
     'K': pieces.King
 }
 
+SCORES = {
+    'P': 1,
+    'H': 3,
+    'B': 3,
+    'R': 5,
+    'Q': 9,
+    'K': 0
+}
+
 START_POSITION = [
     ["bR", "bH", "bB", "bQ", "bK", "bB", "bH", "bR"],
     ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
@@ -69,9 +78,9 @@ CHECKMATE_POSITION = [
     ['__', '__', '__', '__', '__', '__', '__', '__'], 
     ['__', '__', '__', '__', '__', '__', '__', 'bK'],
     ['__', 'bR', '__', '__', '__', '__', '__', '__'], 
-    ['__', 'bR', '__', '__', '__', '__', '__', '__'], 
-    ['__', '__', '__', '__', '__', '__', 'wR', '__'], 
-    ['__', '__', '__', '__', '__', '__', 'wR', '__'], 
+    ['__', 'bQ', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', '__', '__', '__', '__'], 
     ['wK', 'bR', '__', '__', '__', '__', '__', '__']
 ]
 
@@ -80,8 +89,6 @@ class Game_state():
         self.board = START_POSITION
         self.white_to_move = True
         self.move_log = []
-        self.checkmate = False
-        self.stalemate = False
         self.white_king_pos = (7, 4)
         self.black_king_pos = (0, 4)
         self.white_ksc = True
@@ -249,9 +256,24 @@ class Game_state():
             attacked_squares = self.get_attacked_squares(self.board, turn)
             
         return king_pos in attacked_squares
-        
-
-
-
     
+    def checkmate(self):
+        valid_moves = self.get_legal_moves(self.get_all_possible_moves())
+        return self.in_check() and len(valid_moves) == 0
+    
+    def stalemate(self):
+        valid_moves = self.get_legal_moves(self.get_all_possible_moves())
+        return not self.in_check() and len(valid_moves) == 0
+    
+    def count_material(self):
+        score = 0
+        for row in range(8):
+            for col in range(8):
+                square = self.board[row][col]
+                if square[0] == 'w':
+                    score += SCORES[square[1]]
+                elif square[0] == 'b':
+                    score -= SCORES[square[1]]
 
+        return score
+    

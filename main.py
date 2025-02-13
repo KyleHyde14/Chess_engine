@@ -1,7 +1,7 @@
 import pygame
 import pieces   
 from engine import Game_state
-from brain import make_random_move
+from brain import make_random_move, find_best_move
 
 WINDOW_SIZE = 512  
 BOARD_SIZE = 8     
@@ -193,18 +193,17 @@ def main():
                             sqClicked = ()
                             continue
             if (gs.white_to_move and whiteAI) or (not gs.white_to_move and blackAI):
-                moves = gs.get_legal_moves(gs.get_all_possible_moves())
-                AImove = make_random_move(moves)
+                AImove = find_best_move(gs, 3)
                 gs.make_move(AImove)
 
         draw_game(screen, gs, sqClicked)
         
-        if len(gs.get_legal_moves(gs.get_all_possible_moves())) < 1:
+        if gs.checkmate() or gs.stalemate():
             while running:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
-                if gs.in_check():
+                if gs.checkmate():
                     winner = 'Black' if gs.white_to_move else 'White'
                     message = f'Checkmate! {winner} wins!'
                 else:
