@@ -45,7 +45,6 @@ def draw_pieces(screen, board):
                 color = square[0]
                 piece = PIECES[square[1]]("white" if color == 'w' else "black", (row, col))
                 screen.blit(IMAGES[f'{color}{piece.value}'], (col * CELL_SIZE, row * CELL_SIZE))
-import pygame
 
 def draw_promotion_choices(screen, window_size, color):
     WIDTH, HEIGHT = window_size, window_size
