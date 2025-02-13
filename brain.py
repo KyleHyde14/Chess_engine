@@ -56,8 +56,6 @@ def find_best_move(gs, depth):
         for move in valid_moves:
             gs.make_move(move)
             score = minimax(gs, depth - 1, True)
-            print(score)
-            print(move.start_square, move.end_square)
             gs.undo_move()
             if score < best_score:
                 best_score = score
