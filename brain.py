@@ -10,11 +10,10 @@ def evaluate(gs):
 def minimax(gs, depth, maximize):
     if gs.checkmate():
         return -float('inf') if maximize else float('inf')
-    if gs.stalemate():
+    elif gs.stalemate():
         return 0
     if depth == 0:
         return evaluate(gs)
-    
     
     if maximize:
         best_score = -float('inf')
@@ -39,23 +38,20 @@ def minimax(gs, depth, maximize):
         
     
 def find_best_move(gs, depth):
-    best_move = None
+    valid_moves = gs.get_legal_moves(gs.get_all_possible_moves())
+    best_move = random.choice(valid_moves)    
     
     if gs.white_to_move:
         best_score = -float('inf')
-        valid_moves = gs.get_legal_moves(gs.get_all_possible_moves())
         for move in valid_moves:
             gs.make_move(move)
             score = minimax(gs, depth - 1, False)
-            print(score)
-            print(move.start_square, move.end_square)
             gs.undo_move()
             if score > best_score:
                 best_score = score
                 best_move = move
     else:
-        best_score = float('inf')
-        valid_moves = gs.get_legal_moves(gs.get_all_possible_moves())
+        best_score = float('inf')        
         for move in valid_moves:
             gs.make_move(move)
             score = minimax(gs, depth - 1, True)
@@ -63,6 +59,6 @@ def find_best_move(gs, depth):
             if score < best_score:
                 best_score = score
                 best_move = move
-
+    
     return best_move
 

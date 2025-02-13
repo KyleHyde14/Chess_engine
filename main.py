@@ -192,7 +192,7 @@ def main():
                             sqClicked = ()
                             continue
             if (gs.white_to_move and whiteAI) or (not gs.white_to_move and blackAI):
-                AImove = find_best_move(gs, 3)
+                AImove = find_best_move(gs, 2)
                 gs.make_move(AImove)
 
         draw_game(screen, gs, sqClicked)
