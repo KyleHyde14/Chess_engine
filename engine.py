@@ -9,15 +9,6 @@ PIECES = {
     'K': pieces.King
 }
 
-SCORES = {
-    'P': 1,
-    'H': 3,
-    'B': 3,
-    'R': 5,
-    'Q': 9,
-    'K': 0
-}
-
 START_POSITION = [
     ["bR", "bH", "bB", "bQ", "bK", "bB", "bH", "bR"],
     ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
@@ -264,16 +255,4 @@ class Game_state():
     def stalemate(self):
         valid_moves = self.get_legal_moves(self.get_all_possible_moves())
         return not self.in_check() and len(valid_moves) == 0
-    
-    def count_material(self):
-        score = 0
-        for row in range(8):
-            for col in range(8):
-                square = self.board[row][col]
-                if square[0] == 'w':
-                    score += SCORES[square[1]]
-                elif square[0] == 'b':
-                    score -= SCORES[square[1]]
-
-        return score
-    
+       

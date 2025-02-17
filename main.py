@@ -1,7 +1,7 @@
 import pygame
 import pieces   
 from engine import Game_state
-from brain import make_random_move, find_best_move
+from brain import make_random_move, find_best_move_minimax, find_best_move_negamax
 
 WINDOW_SIZE = 512  
 BOARD_SIZE = 8     
@@ -192,7 +192,7 @@ def main():
                             sqClicked = ()
                             continue
             if (gs.white_to_move and whiteAI) or (not gs.white_to_move and blackAI):
-                AImove = find_best_move(gs, 2)
+                AImove = find_best_move_minimax(gs, 2)
                 gs.make_move(AImove)
 
         draw_game(screen, gs, sqClicked)

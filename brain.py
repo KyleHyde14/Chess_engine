@@ -1,11 +1,20 @@
 import random
 from engine import Game_state as gs
 
+SCORES = {
+    'P': 1,
+    'H': 3,
+    'B': 3,
+    'R': 5,
+    'Q': 9,
+    'K': 0
+}
+
 def make_random_move(move_list):
     return random.choice(move_list)
 
 def evaluate(gs):
-    return gs.count_material()
+    return count_material(gs.board)
 
 def minimax(gs, depth, maximize):
     if gs.checkmate():
@@ -37,7 +46,7 @@ def minimax(gs, depth, maximize):
         return best_score
         
     
-def find_best_move(gs, depth):
+def find_best_move_minimax(gs, depth):
     valid_moves = gs.get_legal_moves(gs.get_all_possible_moves())
     best_move = random.choice(valid_moves)    
     
@@ -62,3 +71,17 @@ def find_best_move(gs, depth):
     
     return best_move
 
+def find_best_move_negamax(gs, depth):
+    pass
+
+def count_material(board):
+        score = 0
+        for row in range(8):
+            for col in range(8):
+                square = board[row][col]
+                if square[0] == 'w':
+                    score += SCORES[square[1]]
+                elif square[0] == 'b':
+                    score -= SCORES[square[1]]
+
+        return score
