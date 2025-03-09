@@ -71,8 +71,50 @@ def find_best_move_minimax(gs, depth):
     
     return best_move
 
+def negamax_alpha_beta(gs, depth, alpha, beta, color):
+    if gs.checkmate():
+        return -float('inf') * color  
+    elif gs.stalemate():
+        return 0
+    if depth == 0:
+        return color * evaluate(gs)
+
+    best_score = -float('inf')
+    valid_moves = gs.get_legal_moves(gs.get_all_possible_moves())
+
+    for move in valid_moves:
+        gs.make_move(move)
+        score = -negamax_alpha_beta(gs, depth - 1, -beta, -alpha, -color)
+        gs.undo_move()
+
+        best_score = max(best_score, score)
+        alpha = max(alpha, score)
+
+        if alpha >= beta:
+            break
+
+    return best_score
+
 def find_best_move_negamax(gs, depth):
-    pass
+    valid_moves = gs.get_legal_moves(gs.get_all_possible_moves())
+    best_move = random.choice(valid_moves)  
+
+    best_score = -float('inf')
+    alpha, beta = -float('inf'), float('inf')
+    color = 1 if gs.white_to_move else -1
+
+    for move in valid_moves:
+        gs.make_move(move)
+        score = -negamax_alpha_beta(gs, depth - 1, -beta, -alpha, -color)
+        gs.undo_move()
+
+        if score > best_score:
+            best_score = score
+            best_move = move
+
+        alpha = max(alpha, score)
+
+    return best_move
 
 def count_material(board):
         score = 0
