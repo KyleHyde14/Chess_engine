@@ -68,25 +68,25 @@ CHECKMATE_POSITION = [
     ['__', '__', '__', '__', '__', '__', '__', '__'],
     ['__', '__', '__', '__', '__', '__', '__', '__'], 
     ['__', '__', '__', '__', '__', '__', '__', 'bK'],
-    ['__', 'bR', '__', '__', '__', '__', '__', '__'], 
-    ['__', 'bQ', '__', '__', '__', '__', '__', '__'], 
+    ['__', '__', '__', '__', 'bQ', '__', '__', '__'], 
+    ['__', '__', '__', '__', 'bQ', '__', '__', '__'], 
     ['__', '__', '__', '__', '__', '__', '__', '__'], 
     ['__', '__', '__', '__', '__', '__', '__', '__'], 
-    ['wK', 'bR', '__', '__', '__', '__', '__', '__']
+    ['wK', '__', '__', '__', '__', '__', '__', '__']
 ]
 
 class Game_state():
     def __init__(self):
-        self.board = START_POSITION
+        self.board = CHECKMATE_POSITION
         self.white_to_move = True
         self.move_log = []
         self.white_king_pos = (7, 4)
         self.black_king_pos = (0, 4)
-        self.white_ksc = True
-        self.white_qsc = True
-        self.black_ksc = True
-        self.black_qsc = True
-        self.castle_rights_log = [(True, True, True, True)]
+        self.white_ksc = False
+        self.white_qsc = False
+        self.black_ksc = False
+        self.black_qsc = False
+        self.castle_rights_log = [(False, False, False, False)]
         self.en_passant_square = ()
 
     
