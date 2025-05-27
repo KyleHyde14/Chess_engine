@@ -77,16 +77,16 @@ CHECKMATE_POSITION = [
 
 class Game_state():
     def __init__(self):
-        self.board = CHECKMATE_POSITION
+        self.board = START_POSITION
         self.white_to_move = True
         self.move_log = []
         self.white_king_pos = (7, 4)
         self.black_king_pos = (0, 4)
-        self.white_ksc = False
-        self.white_qsc = False
-        self.black_ksc = False
-        self.black_qsc = False
-        self.castle_rights_log = [(False, False, False, False)]
+        self.white_ksc = True
+        self.white_qsc = True
+        self.black_ksc = True
+        self.black_qsc = True
+        self.castle_rights_log = [(True, True, True, True)]
         self.en_passant_square = ()
 
     
